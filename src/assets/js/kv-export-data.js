@@ -123,7 +123,9 @@
             }
         },
         setLoadingModalAlert: function () {
-            this.loading.fadeOut(1000);
+            this.loading.fadeOut(1000, function () {
+                $(this).remove();
+            });
         },
         processExport: function (fmt) {
             var self = this, $selected, cols = [], $csrf, yiiLib = window.yii, isPopup, cfg = self.settings,
