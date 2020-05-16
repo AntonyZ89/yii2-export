@@ -6,7 +6,7 @@
  * @version 1.4.1
  */
 
-namespace kartik\export;
+namespace antonyz89\export;
 
 use DOMDocument;
 use kartik\mpdf\Pdf;

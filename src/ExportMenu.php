@@ -7,7 +7,7 @@
  * @version   1.4.1
  */
 
-namespace kartik\export;
+namespace antonyz89\export;
 
 use Closure;
 use kartik\base\TranslationTrait;
