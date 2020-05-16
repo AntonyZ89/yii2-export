@@ -34,6 +34,9 @@
             return $('<iframe/>', {name: id, css: {'display': 'none'}}).appendTo('body');
         },
         createLoadingModal: function (id, text) {
+            if ($('.kv-export-background').length) {
+                return;
+            }
             const $background = $('<div/>', {id, class: 'kv-export-background'});
             const $modal = $('<div/>', {class: 'kv-export-modal', text});
             const $div = $('<div/>');
