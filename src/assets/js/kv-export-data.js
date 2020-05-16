@@ -14,6 +14,7 @@
     $h = {
         DIALOG: 'kvExportDialog',
         IFRAME: 'kvExportIframe',
+        LOADING: 'kvExportLoading',
         TARGET_POPUP: '_popup',
         TARGET_IFRAME: '_iframe',
         isEmpty: function (value, trim) {
@@ -32,12 +33,24 @@
             }
             return $('<iframe/>', {name: id, css: {'display': 'none'}}).appendTo('body');
         },
+        createLoadingModal: function (id, text) {
+            const $background = $('<div/>', {id, class: 'kv-export-background'});
+            const $modal = $('<div/>', {class: 'kv-export-modal', text});
+            const $div = $('<div/>');
+            const $loader = $('<div class="kv-export-loader"/>');
+
+            $div.append($loader)
+            $modal.append($div);
+            $background.append($modal);
+
+            return $background.appendTo('body');
+        },
         popupTemplate: '<html style="display:table;width:100%;height:100%;">' +
-        '<title>Export Data - &copy; Krajee</title>' +
-        '<body style="display:table-cell;font-family:Helvetica,Arial,sans-serif;color:#888;font-weight:bold;line-height:1.4em;text-align:center;vertical-align:middle;width:100%;height:100%;padding:0 10px;">' +
-        '{msg}' +
-        '</body>' +
-        '</html>'
+            '<title>Export Data - &copy; Krajee</title>' +
+            '<body style="display:table-cell;font-family:Helvetica,Arial,sans-serif;color:#888;font-weight:bold;line-height:1.4em;text-align:center;vertical-align:middle;width:100%;height:100%;padding:0 10px;">' +
+            '{msg}' +
+            '</body>' +
+            '</html>'
     };
     ExportData = function (element, options) {
         var self = this;
@@ -47,6 +60,7 @@
         });
         self.popup = '';
         self.iframe = '';
+        self.loading = '';
         self.listen();
     };
 
@@ -105,6 +119,9 @@
                 self.popup.document.write(newmsg);
             }
         },
+        setLoadingModalAlert: function () {
+            this.loading.fadeOut(1000);
+        },
         processExport: function (fmt) {
             var self = this, $selected, cols = [], $csrf, yiiLib = window.yii, isPopup, cfg = self.settings,
                 frmConfig, expCols, $form, getInput = function (name, value) {
@@ -122,10 +139,11 @@
                 self.popup.focus();
                 self.setPopupAlert(self.settings.messages.downloadProgress);
                 frmConfig.target = $h.DIALOG;
-            }
-            if (cfg.target === $h.TARGET_IFRAME) {
+            } else if (cfg.target === $h.TARGET_IFRAME) {
                 self.iframe = $h.createIframe($h.IFRAME);
                 frmConfig.target = $h.IFRAME;
+            } else {
+                self.loading = $h.createLoadingModal($h.LOADING, self.settings.messages.downloadProgress)
             }
             $csrf = yiiLib ? getInput(yiiLib.getCsrfParam() || '_csrf', yiiLib.getCsrfToken() || null) : null;
             expCols = '';
@@ -152,7 +170,10 @@
                 });
             }
             $form.submit().remove();
-            if (isPopup) {
+
+            if (self.loading) {
+                this.setLoadingModalAlert();
+            } else if (isPopup) {
                 self.setPopupAlert(self.settings.messages.downloadComplete, true);
             }
         }

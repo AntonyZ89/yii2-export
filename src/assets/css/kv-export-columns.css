@@ -39,3 +39,48 @@
 .kv-toggle-all:hover {
     color: #286090;
 }
+
+.kv-export-background {
+    background-color: rgba(0, 0, 0, 0.61);
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99999;
+}
+
+.kv-export-background > .kv-export-modal {
+    width: 320px;
+    height: 160px;
+    padding: 15px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 5px;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.kv-export-background > .kv-export-modal > div {
+    padding-top: 9px;
+}
+
+.kv-export-loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
