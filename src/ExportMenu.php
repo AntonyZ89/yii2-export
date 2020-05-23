@@ -787,11 +787,12 @@ class ExportMenu extends GridView
         $this->generateAfterContent($row);
         $writer = $this->_objWriter;
         $sheet = $this->_objWorksheet;
-        if ($this->autoWidth) {
-            foreach ($this->getVisibleColumns() as $n => $column) {
+        foreach ($this->getVisibleColumns() as $n => $column) {
+            if ($column->autoWidth || ($this->autoWidth && $column->autoWidth !== false)) {
                 $sheet->getColumnDimension(self::columnName($n + 1))->setAutoSize(true);
             }
         }
+
         $this->raiseEvent('onRenderSheet', [$sheet, $this]);
         $this->folder = trim(Yii::getAlias($this->folder));
         if (!file_exists($this->folder) && !mkdir($this->folder, 0777, true)) {
