@@ -1422,7 +1422,7 @@ class ExportMenu extends GridView
         $this->_endCol = 0;
         foreach ($this->getVisibleColumns() as $n => $column) {
             $this->_endCol = $this->_endCol + 1;
-            if ($column->footer) {
+            if ($column->footer !== null) {
                 $footerExists = true;
                 $footer = trim($column->footer) !== '' ? $column->footer : $column->grid->blankDisplay;
                 $format = ArrayHelper::remove($column->footerOptions, 'cellFormat', null);
