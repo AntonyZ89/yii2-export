@@ -1251,6 +1251,9 @@ class ExportMenu extends GridView
             if (!empty($column->hiddenFromExport) || $isActionColumn || $isNoExport) {
                 continue;
             }
+            if ($column->autoWidth === null) {
+                $column->autoWidth = $this->autoWidth;
+            }
             $columns[] = $column;
         }
         $this->_visibleColumns = $columns;
