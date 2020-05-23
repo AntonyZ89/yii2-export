@@ -788,7 +788,7 @@ class ExportMenu extends GridView
         $writer = $this->_objWriter;
         $sheet = $this->_objWorksheet;
         foreach ($this->getVisibleColumns() as $n => $column) {
-            if ($column->autoWidth || ($this->autoWidth && $column->autoWidth !== false)) {
+            if ((isset($column->autoWidth) && $column->autoWidth) || ($this->autoWidth && isset($column->autoWidth) && $column->autoWidth !== false)) {
                 $sheet->getColumnDimension(self::columnName($n + 1))->setAutoSize(true);
             }
         }
