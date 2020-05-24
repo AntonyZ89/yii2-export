@@ -9,11 +9,11 @@
 
 namespace antonyz89\export;
 
+use antonyz89\export\components\GridView;
 use Closure;
 use kartik\base\TranslationTrait;
 use kartik\dialog\Dialog;
 use kartik\dynagrid\Dynagrid;
-use antonyz89\export\components\GridView;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -1197,7 +1197,7 @@ class ExportMenu extends GridView
             $opts = $styleOpts;
             $this->_endCol++;
             /**
-             * @var \kartik\grid\DataColumn $column
+             * @var DataColumn $column
              */
             $head = ($column instanceof DataColumn) ? $this->getColumnHeader($column) : $column->header;
             $id = self::columnName($this->_endCol) . $this->_beginRow;
@@ -1251,7 +1251,13 @@ class ExportMenu extends GridView
             if (!empty($column->hiddenFromExport) || $isActionColumn || $isNoExport) {
                 continue;
             }
-            if ($column->autoWidth === null) {
+
+            if (property_exists($column, 'exportMenuValue') && $column->exportMenuValue !== null) {
+                $column->value = $column->exportMenuValue;
+                $column->content = $column->exportMenuValue;
+            }
+
+            if (property_exists($column, 'autoWidth') && $column->autoWidth === null) {
                 $column->autoWidth = $this->autoWidth;
             }
             $columns[] = $column;
