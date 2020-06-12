@@ -802,6 +802,7 @@ class ExportMenu extends GridView
         }
         $filename = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $this->filename);
         $file = self::slash($this->folder) . $filename . '.' . $config['extension'];
+
         if ($this->stream) {
             $this->clearOutputBuffers();
         }
@@ -812,7 +813,7 @@ class ExportMenu extends GridView
             readfile($file);
             $this->cleanup($file, $config);
             exit();
-        } else {
+        } else if (!Yii::$app->request->isConsoleRequest) {
             $this->registerAssets();
             echo $this->renderExportMenu();
             if ($this->_triggerDownload && $this->afterSaveView !== false) {
@@ -857,8 +858,18 @@ class ExportMenu extends GridView
         }
         $this->_columnSelectorEnabled = $this->showColumnSelector && $this->asDropdown;
         $request = Yii::$app->request;
-        $this->_triggerDownload = $request->post($this->exportRequestParam, $this->triggerDownload);
-        $this->_exportType = $request->post($this->exportTypeParam, $this->exportType);
+
+        if ($request->isConsoleRequest) {
+            /** @var \yii\console\Request $request */
+            $params = $request->getParams();
+            $this->_triggerDownload = $params[$this->exportRequestParam] ?? $this->triggerDownload;
+            $this->_exportType = $params[$this->exportTypeParam] ?? $this->exportType;
+        } else {
+            /** @var \yii\web\Request _triggerDownload */
+            $this->_triggerDownload = $request->post($this->exportRequestParam, $this->triggerDownload);
+            $this->_exportType = $request->post($this->exportTypeParam, $this->exportType);
+        }
+
         if (!$this->stream) {
             $this->target = self::TARGET_SELF;
         }
@@ -866,7 +877,12 @@ class ExportMenu extends GridView
             if ($this->stream) {
                 Yii::$app->controller->layout = false;
             }
-            $this->_columnSelectorEnabled = $request->post($this->colSelFlagParam, $this->_columnSelectorEnabled);
+
+            if ($request->isConsoleRequest) {
+                $this->_columnSelectorEnabled = $request->getParams()[$this->colSelFlagParam] ?? $this->_columnSelectorEnabled;
+            } else {
+                $this->_columnSelectorEnabled = $request->post($this->colSelFlagParam, $this->_columnSelectorEnabled);
+            }
             $this->initSelectedColumns();
         }
         if ($this->dynagrid) {
@@ -1702,7 +1718,14 @@ class ExportMenu extends GridView
         if (!$this->_columnSelectorEnabled) {
             return;
         }
-        $expCols = Yii::$app->request->post($this->exportColsParam, '');
+        $request = Yii::$app->request;
+
+        if ($request->isConsoleRequest) {
+            $expCols = Yii::$app->request->getParams()[$this->exportColsParam] || '';
+        } else {
+            $expCols = Yii::$app->request->post($this->exportColsParam, '');
+        }
+
         $this->selectedColumns = empty($expCols) ? array_keys($this->columnSelector) : Json::decode($expCols);
     }
 

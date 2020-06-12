@@ -110,6 +110,83 @@ echo \kartik\grid\GridView::widget([
 ]);
 ```
 
+### Using ExportMenu on Console
+
+Export files on Console into `console/runtime/export` folder
+
+```php
+namespace console\controllers;
+
+use antonyz89\export\ExportMenu;
+use backend\models\ExampleSearch;
+use yii\console\Controller;
+use Yii;
+
+class ExampleController extends Controller {
+    public function actionEmail()
+    {
+        Yii::$app->request->setParams([ // fake request
+            'exportFull_w0' => '1',
+            'export_columns' => "['0','1','2','3','4','5','6','7','8']", // same number of columns
+        ]);
+
+        $searchModel = new ExampleSearch();
+        $searchModel->active = 1;
+        $searchModel->account_id = 1;
+
+        $dataProvider = $searchModel->search([]);
+
+        $menu = new ExportMenu([
+            'title' => Yii::t('app', 'Examples'),
+            'dataProvider' => $dataProvider,
+            'exportType' => ExportMenu::FORMAT_EXCEL_X,
+            'stream' => false,
+            'deleteAfterSave' => false,
+            'columns' => [
+                [
+                    'label' => Yii::t('app', 'Operator'),
+                    'attribute' => '_user',
+                    'value' => 'obligation.user.email'
+                ],
+                [
+                    'attribute' => '_company',
+                    'value' => static function (ExampleReport $model) {
+                        return "{$model->company->initials}  - $model->company";
+                    }
+                ],
+                [
+                    'attribute' => 'declaration_id',
+                    'value' => 'declaration',
+                ],
+                [
+                    'attribute' => 'competence',
+                    'value' => 'competenceText'
+                ],
+                [
+                    'attribute' => 'deadline',
+                    'format' => ['date', 'php:d/m/Y']
+                ],
+                [
+                    'attribute' => 'reported_date',
+                    'value' => static function (ExampleReport $model) {
+                        return $model->reported_date ?
+                            DateHelper::toFormat($model->reported_date, 'Y-m-d H:i:s', 'd/m/Y H:i:s') :
+                            Yii::t('app', 'Not submitted');
+                    },
+                ],
+                [
+                    'attribute' => 'status',
+                    'value' => 'statusText'
+                ],
+                'reason_delay'
+            ]
+        ]);
+
+        $menu->run(); // see your file in `console/runtime/export`
+    }
+}
+```
+
 ## Contributors
 
 ### Code Contributors
