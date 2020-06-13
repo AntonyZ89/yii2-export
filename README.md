@@ -125,11 +125,6 @@ use Yii;
 class ExampleController extends Controller {
     public function actionEmail()
     {
-        Yii::$app->request->setParams([ // fake request
-            'exportFull_w0' => '1',
-            'export_columns' => "['0','1','2','3','4','5','6','7','8']", // same number of columns
-        ]);
-
         $searchModel = new ExampleSearch();
         $searchModel->active = 1;
         $searchModel->account_id = 1;
@@ -138,6 +133,7 @@ class ExampleController extends Controller {
 
         $menu = new ExportMenu([
             'title' => Yii::t('app', 'Examples'),
+            'triggerDownload' => true,
             'dataProvider' => $dataProvider,
             'exportType' => ExportMenu::FORMAT_EXCEL_X,
             'stream' => false,

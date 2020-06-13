@@ -1721,7 +1721,7 @@ class ExportMenu extends GridView
         $request = Yii::$app->request;
 
         if ($request->isConsoleRequest) {
-            $expCols = Yii::$app->request->getParams()[$this->exportColsParam] || '';
+            $expCols = Yii::$app->request->getParams()[$this->exportColsParam] ?? '';
         } else {
             $expCols = Yii::$app->request->post($this->exportColsParam, '');
         }
