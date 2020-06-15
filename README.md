@@ -120,11 +120,17 @@ namespace console\controllers;
 use antonyz89\export\ExportMenu;
 use backend\models\ExampleSearch;
 use yii\console\Controller;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use Yii;
 
 class ExampleController extends Controller {
     public function actionEmail()
     {
+       Yii::$app->request->setParams([ // fake request
+            'export_columns' => Json::encode(array_keys(self::getColumns()))
+        ]);
+
         $searchModel = new ExampleSearch();
         $searchModel->active = 1;
         $searchModel->account_id = 1;
@@ -138,47 +144,51 @@ class ExampleController extends Controller {
             'exportType' => ExportMenu::FORMAT_EXCEL_X,
             'stream' => false,
             'deleteAfterSave' => false,
-            'columns' => [
-                [
-                    'label' => Yii::t('app', 'Operator'),
-                    'attribute' => '_user',
-                    'value' => 'obligation.user.email'
-                ],
-                [
-                    'attribute' => '_company',
-                    'value' => static function (ExampleReport $model) {
-                        return "{$model->company->initials}  - $model->company";
-                    }
-                ],
-                [
-                    'attribute' => 'declaration_id',
-                    'value' => 'declaration',
-                ],
-                [
-                    'attribute' => 'competence',
-                    'value' => 'competenceText'
-                ],
-                [
-                    'attribute' => 'deadline',
-                    'format' => ['date', 'php:d/m/Y']
-                ],
-                [
-                    'attribute' => 'reported_date',
-                    'value' => static function (ExampleReport $model) {
-                        return $model->reported_date ?
-                            DateHelper::toFormat($model->reported_date, 'Y-m-d H:i:s', 'd/m/Y H:i:s') :
-                            Yii::t('app', 'Not submitted');
-                    },
-                ],
-                [
-                    'attribute' => 'status',
-                    'value' => 'statusText'
-                ],
-                'reason_delay'
-            ]
+            'columns' => self::getColumns()
         ]);
 
         $menu->run(); // see your file in `console/runtime/export`
+    }
+
+    public static function getColumns() {
+        return [
+                   [
+                       'label' => Yii::t('app', 'Operator'),
+                       'attribute' => '_user',
+                       'value' => 'obligation.user.email'
+                   ],
+                   [
+                       'attribute' => '_company',
+                       'value' => static function (ExampleReport $model) {
+                           return "{$model->company->initials}  - $model->company";
+                       }
+                   ],
+                   [
+                       'attribute' => 'declaration_id',
+                       'value' => 'declaration',
+                   ],
+                   [
+                       'attribute' => 'competence',
+                       'value' => 'competenceText'
+                   ],
+                   [
+                       'attribute' => 'deadline',
+                       'format' => ['date', 'php:d/m/Y']
+                   ],
+                   [
+                       'attribute' => 'reported_date',
+                       'value' => static function (ExampleReport $model) {
+                           return $model->reported_date ?
+                               DateHelper::toFormat($model->reported_date, 'Y-m-d H:i:s', 'd/m/Y H:i:s') :
+                               Yii::t('app', 'Not submitted');
+                       },
+                   ],
+                   [
+                       'attribute' => 'status',
+                       'value' => 'statusText'
+                   ],
+                   'reason_delay'
+               ];
     }
 }
 ```
