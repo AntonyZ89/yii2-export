@@ -1910,6 +1910,8 @@ class ExportMenu extends GridView
                 'extension' => 'xls',
                 'writer' => self::FORMAT_EXCEL,
             ],
+            self::FORMAT_EXCEL_X => false
+            /*
             self::FORMAT_EXCEL_X => [
                 'label' => Yii::t('kvexport', 'Excel 2007+'),
                 'icon' => $isBs4 ? 'fas fa-file-excel' : ($isFa ? 'fa fa-file-excel-o' : 'glyphicon glyphicon-floppy-remove'),
@@ -1921,6 +1923,7 @@ class ExportMenu extends GridView
                 'extension' => 'xlsx',
                 'writer' => self::FORMAT_EXCEL_X,
             ],
+            */
         ];
     }
 
